@@ -5,6 +5,10 @@
 #include "memlayout.h"
 #include "spinlock.h"
 #include "proc.h"
+#include "sysinfo.h" // I added
+
+extern uint64 number_procs();
+extern uint64 free_memory_amount();
 
 uint64
 sys_exit(void)
@@ -90,4 +94,29 @@ sys_uptime(void)
   xticks = ticks;
   release(&tickslock);
   return xticks;
+}
+
+uint64
+sys_trace(void)
+{
+  int mask;
+
+  argint(0, &mask);
+  myproc()->tracemask = mask;
+  return 0;
+}
+
+uint64
+sys_sysinfo(void)
+{
+  struct proc *p = myproc();
+  uint64 addr;
+  struct sysinfo si;
+
+  si.freemem = free_memory_amount();
+  si.nproc = number_procs();
+  argaddr(0, &addr); // we want to make addr point to the sys
+  if(copyout(p->pagetable, addr, (char *)&si, sizeof(si)) < 0)
+    return -1;
+  return 0;
 }

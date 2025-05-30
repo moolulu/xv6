@@ -1,0 +1,6 @@
+1) from bt we get usertrap called syscall
+2) from p/x p->trapframe->a7 we get thatthe value is 7, and form inspecting user/initcode.S we see that a7 is the register that stores what syscall we calll.
+3) from reading the pdf provided (the RISC-V book) at pages 63-64, we see that the privilage level is indicated by SPP, the 8'th (0-indexed) bit of sstatus, since p/t $sstatus gives 100010, we infer that we were previously in usermode (it originated the trap), which makes sense considering the answer in (1).
+4) by setting up a breakpoint at the sepc, I see we stop at the operation "lw a3,0", so the a3 register corresponds to num.
+5) by runnig the next instruction in gdb, we get a kernel panic. after p/d $scause we see it's value is 13, and this corresponds to load page fault (page 85 in the RISC-V book). this makes sense, as the kernel tries loading the page at 0x00000000 but it is reserved.
+6) from p p->name we find it was the init binary, and from p p->pid we find its process id to be 1 (which is typical for the init process).
