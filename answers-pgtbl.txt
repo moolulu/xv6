@@ -1,0 +1,2 @@
+1) The system calls that could be made faster using this shared page are the ones dependent on the pid of a process, namely getpid, fork, wait.
+2) Figure 3-4 does not not seem to fit the questions asked. I will edit this answer after consulting the staff.

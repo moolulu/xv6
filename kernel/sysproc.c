@@ -75,6 +75,32 @@ int
 sys_pgaccess(void)
 {
   // lab pgtbl: your code here.
+  #define MAX_PAGES 32
+
+  uint64 start_va;
+  int npages;
+  uint64 buf;
+
+  argaddr(0, &start_va);
+  argint(1, &npages);
+  argaddr(2, &buf);
+
+  if (npages > MAX_PAGES){
+    return -1;
+  }
+
+  unsigned int temp = 0; // enough to store all MAX_PAGES bits
+
+  for (int i = 0; i < npages; i++){
+    uint64 page_va = start_va + i * PGSIZE;
+    pte_t *pte = walk(myproc()->pagetable, page_va, 0);
+    if (*pte & PTE_A)
+      temp |= (1 << i);
+    *pte &= ~PTE_A;
+  }
+
+  copyout(myproc()->pagetable, buf, (char *)&temp, 4);
+
   return 0;
 }
 #endif
