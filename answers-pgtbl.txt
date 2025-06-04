@@ -1,2 +1,2 @@
 1) The system calls that could be made faster using this shared page are the ones dependent on the pid of a process, namely getpid, fork, wait.
-2) Figure 3-4 does not not seem to fit the questions asked. I will edit this answer after consulting the staff.
+2) Page 0 conatines the text section - where the executable code resides. Page 2 contains the data. Page 1 is unused (and is probably used as a guard page) so the user shouldn't have permissions to read/write to it. The third to last page is also unused and is probably a guard page, but there are probably more usued pages below it that are actually reserves for when we want to grow the heap.
