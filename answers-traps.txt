@@ -1,0 +1,6 @@
+1) The a_i registres. The a2 registers holds 13 in main's call to printf.
+2) The call to f is at line 46: "26:	45b1 ;li	a1,12" - it just inlined f(8)+1=12. There isnt supposed to be a call to g from main by looking at the C code.
+3) The function printf is loacted at 0000000000000642.
+4) ---
+5) The output is "He110 World" - the %x formatter turns 57616 to hex before printing, and 57616=0xe110, the %s formatter starts reading the data from the given address (i's value) as chars until it hits the null terminator, and 0x00646c72 in little endien deocdes to "rld\0".
+6) Since printf is a variadic function, the function reads from va_arg for every formatter, so here we will just print whatever va_arg points to after reading the 3.
