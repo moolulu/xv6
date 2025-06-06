@@ -65,6 +65,13 @@ usertrap(void)
     intr_on();
 
     syscall();
+
+    if (p->trapframe->a7 == 23){ // SYS_sigreturn
+        //p->trapframe = p->sig_state;
+        memmove(p->trapframe, &(p->sig_state), sizeof(struct trapframe));
+        p->in_handler = 0;
+        //printf("\n%p\n", p->trapframe->epc);
+    }
   } else if((which_dev = devintr()) != 0){
     // ok
   } else {
@@ -77,8 +84,18 @@ usertrap(void)
     exit(-1);
 
   // give up the CPU if this is a timer interrupt.
-  if(which_dev == 2)
+  if(which_dev == 2){
+    p->ticks_passed++;
+    if (p->ticks_passed == p->interval && !p->in_handler){
+      p->ticks_passed = 0; // reset alarm timer
+      p->in_handler = 1; // block re-entrent calls to handler
+
+      p->sig_state = *(p->trapframe); // store process's state
+      //p->sig_state.epc += 4;
+      p->trapframe->epc = (uint64)p->handler; // set pc to execute handler
+    }
     yield();
+  }
 
   usertrapret();
 }

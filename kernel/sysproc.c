@@ -6,7 +6,7 @@
 #include "spinlock.h"
 #include "proc.h"
 
-extern void backtrace(struct proc* p); // here for the sole purpose of calling backtrace from sys_sleep
+extern void backtrace(); // here for the sole purpose of calling backtrace from sys_sleep
 
 uint64
 sys_exit(void)
@@ -53,7 +53,7 @@ sys_sbrk(void)
 uint64
 sys_sleep(void)
 {
-  backtrace(myproc());
+  backtrace();
 
   int n;
   uint ticks0;
@@ -99,11 +99,8 @@ sys_uptime(void)
 uint64
 sys_sigalarm(void)
 {
-  int interval;
-  uint64 *handler;
-
-  argint(0, &interval);
-  argaddr(1, &handler);
+  argint(0, &(myproc()->interval));
+  argaddr(1, (uint64 *)&(myproc()->handler));
 
   return 0;
 }
@@ -111,5 +108,10 @@ sys_sigalarm(void)
 uint64
 sys_sigreturn(void)
 {
+  //myproc()->trapframe = myproc()->sig_state;
+  //myproc()->trapframe->epc += 4;
+  //printf("\n   %p\n", myproc()->trapframe->epc);
+  //printf("\n      %p\n", myproc()->sig_state->epc);
+
   return 0;
 }
