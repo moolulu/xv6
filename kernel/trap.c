@@ -67,10 +67,8 @@ usertrap(void)
     syscall();
 
     if (p->trapframe->a7 == 23){ // SYS_sigreturn
-        //p->trapframe = p->sig_state;
         memmove(p->trapframe, &(p->sig_state), sizeof(struct trapframe));
         p->in_handler = 0;
-        //printf("\n%p\n", p->trapframe->epc);
     }
   } else if((which_dev = devintr()) != 0){
     // ok
